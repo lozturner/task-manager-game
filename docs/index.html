@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinSim — OS Simulator Game</title>
+    <meta name="description" content="A fake Windows desktop where you manage virtual processes, memory, and disk. Missions teach you how operating systems work — by playing.">
+    <meta property="og:title" content="WinSim — OS Simulator Game">
+    <meta property="og:description" content="Task Manager: The Game. Manage a virtual OS, complete missions, earn XP.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lozturner.github.io/winsim">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- GoatCounter analytics -->
+    <script data-goatcounter="https://winsim.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --card: #1a1a26;
+            --border: #2a2a3a;
+            --accent: #0078d4;
+            --accent-glow: rgba(0, 120, 212, 0.3);
+            --purple: #af52de;
+            --green: #30d158;
+            --red: #ff453a;
+            --orange: #ff9f0a;
+            --text: #f5f5f7;
+            --text2: #98989f;
+            --text3: #636366;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── Animated background ─────────────────────────────── */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,120,212,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,120,212,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        .bg-glow {
+            position: fixed; top: -30%; left: -10%; width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            z-index: 0; pointer-events: none; animation: float 20s ease-in-out infinite;
+        }
+        .bg-glow-2 {
+            position: fixed; bottom: -20%; right: -10%; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(175,82,222,0.15) 0%, transparent 70%);
+            z-index: 0; pointer-events: none; animation: float 25s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(30px, -40px); }
+            66% { transform: translate(-20px, 30px); }
+        }
+
+        /* ── Container ───────────────────────────────────────── */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+        /* ── Nav ─────────────────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(10,10,15,0.8); border-bottom: 1px solid var(--border);
+        }
+        nav .container {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            font-weight: 800; font-size: 20px; letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text);
+        }
+        .logo-icon {
+            width: 32px; height: 32px; background: var(--accent);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+            color: white;
+        }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a {
+            color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta {
+            background: var(--accent) !important; color: white !important;
+            padding: 8px 20px; border-radius: 8px; font-weight: 600 !important;
+            transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* ── Hero ────────────────────────────────────────────── */
+        .hero {
+            padding: 160px 0 100px; text-align: center;
+        }
+        .hero-badge {
+            display: inline-block; padding: 6px 16px; border-radius: 100px;
+            background: rgba(0,120,212,0.1); border: 1px solid rgba(0,120,212,0.2);
+            color: var(--accent); font-size: 13px; font-weight: 600;
+            margin-bottom: 24px; letter-spacing: 0.5px;
+        }
+        .hero h1 {
+            font-size: clamp(42px, 6vw, 72px); font-weight: 900;
+            line-height: 1.05; letter-spacing: -2px; margin-bottom: 24px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 50%, var(--accent) 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .hero p {
+            font-size: 20px; color: var(--text2); max-width: 600px; margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s; display: inline-flex;
+            align-items: center; gap: 8px; cursor: pointer; border: none;
+        }
+        .btn-primary {
+            background: var(--accent); color: white;
+            box-shadow: 0 4px 24px var(--accent-glow);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--accent-glow); }
+        .btn-secondary {
+            background: var(--card); color: var(--text); border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--accent); background: rgba(0,120,212,0.05); }
+
+        /* ── Fake desktop preview ────────────────────────────── */
+        .preview {
+            margin: 60px auto 0; max-width: 900px;
+            border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+        }
+        .preview-titlebar {
+            background: #ffffff; height: 32px; display: flex;
+            align-items: center; padding: 0 12px; gap: 8px;
+        }
+        .preview-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .preview-dot.r { background: #ff5f56; }
+        .preview-dot.y { background: #ffbd2e; }
+        .preview-dot.g { background: #27c93f; }
+        .preview-titlebar span {
+            flex: 1; text-align: center; font-size: 12px; color: #333; font-weight: 500;
+        }
+        .preview-body {
+            background: linear-gradient(180deg, #0078D7, #004e8c);
+            height: 400px; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .preview-taskbar {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+            background: #1a1a2e; display: flex; align-items: center; padding: 0 12px; gap: 8px;
+        }
+        .preview-start {
+            color: white; font-size: 16px; width: 40px; height: 34px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05); border-radius: 4px;
+        }
+        .preview-app-btn {
+            color: rgba(255,255,255,0.8); font-size: 11px; padding: 4px 12px;
+            border-bottom: 2px solid var(--accent); background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+        }
+        .tray-item { color: rgba(255,255,255,0.5); font-size: 9px; font-family: 'JetBrains Mono', monospace; }
+        .preview-tray { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+
+        /* Fake TM window inside preview */
+        .tm-window {
+            width: 500px; background: #f3f3f3; border-radius: 4px; overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4); margin-bottom: 40px;
+        }
+        .tm-title {
+            background: #fff; height: 28px; display: flex; align-items: center;
+            padding: 0 8px; font-size: 11px; color: #333; gap: 6px;
+        }
+        .tm-title .icon { width: 14px; height: 14px; background: var(--accent); border-radius: 2px; }
+        .tm-title .btns { margin-left: auto; display: flex; gap: 2px; }
+        .tm-title .btns span { width: 36px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #666; }
+        .tm-tabs {
+            display: flex; border-bottom: 1px solid #ddd; font-size: 10px; background: #f3f3f3;
+        }
+        .tm-tabs span { padding: 6px 12px; color: #666; }
+        .tm-tabs span.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .tm-rows { padding: 4px; }
+        .tm-row {
+            display: flex; align-items: center; height: 22px; padding: 0 8px; font-size: 10px;
+            font-family: 'JetBrains Mono', monospace; color: #333; gap: 8px;
+        }
+        .tm-row:nth-child(even) { background: #f8f8f8; }
+        .tm-row .bar {
+            height: 14px; border-radius: 2px; min-width: 4px;
+        }
+        .tm-row .bar.cpu { background: rgba(0,120,212,0.3); }
+        .tm-row .bar.mem { background: rgba(175,82,222,0.3); }
+        .tm-row .name { width: 120px; }
+        .tm-row .val { width: 50px; text-align: right; }
+
+        /* ── Editions ────────────────────────────────────────── */
+        .editions { padding: 120px 0; }
+        .editions h2 {
+            text-align: center; font-size: 40px; font-weight: 800;
+            letter-spacing: -1px; margin-bottom: 16px;
+        }
+        .editions .subtitle {
+            text-align: center; color: var(--text2); font-size: 18px;
+            max-width: 500px; margin: 0 auto 60px;
+        }
+        .edition-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .edition-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 32px; transition: all 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .edition-card:hover {
+            border-color: var(--accent); transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .edition-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        }
+        .edition-card:nth-child(1)::before { background: var(--accent); }
+        .edition-card:nth-child(2)::before { background: var(--purple); }
+        .edition-card:nth-child(3)::before { background: var(--green); }
+        .edition-card .tag {
+            display: inline-block; padding: 4px 12px; border-radius: 6px;
+            font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .edition-card:nth-child(1) .tag { background: rgba(0,120,212,0.15); color: var(--accent); }
+        .edition-card:nth-child(2) .tag { background: rgba(175,82,222,0.15); color: var(--purple); }
+        .edition-card:nth-child(3) .tag { background: rgba(48,209,88,0.15); color: var(--green); }
+        .edition-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+        .edition-card p { color: var(--text2); font-size: 15px; line-height: 1.7; }
+        .edition-card ul {
+            list-style: none; margin-top: 16px;
+        }
+        .edition-card li {
+            color: var(--text2); font-size: 14px; padding: 4px 0;
+            padding-left: 20px; position: relative;
+        }
+        .edition-card li::before {
+            content: ''; position: absolute; left: 0; top: 11px;
+            width: 8px; height: 8px; border-radius: 50%;
+        }
+        .edition-card:nth-child(1) li::before { background: var(--accent); }
+        .edition-card:nth-child(2) li::before { background: var(--purple); }
+        .edition-card:nth-child(3) li::before { background: var(--green); }
+
+        /* ── Features ────────────────────────────────────────── */
+        .features { padding: 80px 0 120px; }
+        .features h2 {
+            text-align: center; font-size: 40px; font-weight: 800;
+            letter-spacing: -1px; margin-bottom: 60px;
+        }
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .feature {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; transition: border-color 0.2s;
+        }
+        .feature:hover { border-color: var(--accent); }
+        .feature-icon {
+            width: 44px; height: 44px; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; font-size: 20px;
+            margin-bottom: 16px;
+        }
+        .feature h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .feature p { color: var(--text2); font-size: 14px; }
+
+        /* ── CTA ─────────────────────────────────────────────── */
+        .cta {
+            padding: 100px 0; text-align: center;
+            background: linear-gradient(180deg, transparent, rgba(0,120,212,0.05));
+            border-top: 1px solid var(--border);
+        }
+        .cta h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
+        .cta p { color: var(--text2); font-size: 18px; margin-bottom: 32px; }
+
+        /* ── Footer ──────────────────────────────────────────── */
+        footer {
+            padding: 40px 0; border-top: 1px solid var(--border); text-align: center;
+        }
+        footer p { color: var(--text3); font-size: 13px; }
+        footer a { color: var(--text2); text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+
+        /* ── Responsive ──────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .nav-links a:not(.nav-cta) { display: none; }
+            .preview-body { height: 280px; }
+            .tm-window { width: 90%; }
+            .edition-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- Nav -->
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">
+                <div class="logo-icon">WS</div>
+                WinSim
+            </a>
+            <div class="nav-links">
+                <a href="#editions">Editions</a>
+                <a href="#features">Features</a>
+                <a href="https://github.com/lozturner/winsim" class="nav-cta">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">v1.0.0 &mdash; Open Source</div>
+            <h1>Task Manager.<br><span class="gradient">The Game.</span></h1>
+            <p>A virtual Windows desktop where you manage processes, memory, and disk. Missions teach you how operating systems work &mdash; by playing.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/lozturner/winsim" class="btn btn-primary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    View on GitHub
+                </a>
+                <a href="https://github.com/lozturner/winsim#quick-start" class="btn btn-secondary">Get Started</a>
+            </div>
+
+            <!-- Fake desktop preview -->
+            <div class="preview">
+                <div class="preview-titlebar">
+                    <span class="preview-dot r"></span>
+                    <span class="preview-dot y"></span>
+                    <span class="preview-dot g"></span>
+                    <span>WinSim &mdash; OS Simulator</span>
+                    <span></span>
+                </div>
+                <div class="preview-body">
+                    <div class="tm-window">
+                        <div class="tm-title">
+                            <div class="icon"></div>
+                            Task Manager
+                            <div class="btns"><span>&minus;</span><span>&#9633;</span><span>&times;</span></div>
+                        </div>
+                        <div class="tm-tabs">
+                            <span class="active">Processes</span>
+                            <span>Performance</span>
+                        </div>
+                        <div class="tm-rows">
+                            <div class="tm-row"><span class="name">svchost.exe</span><span class="val">3.3%</span><div class="bar cpu" style="width:40px"></div><span class="val">82 MB</span><div class="bar mem" style="width:20px"></div></div>
+                            <div class="tm-row"><span class="name">explorer.exe</span><span class="val">1.4%</span><div class="bar cpu" style="width:16px"></div><span class="val">79 MB</span><div class="bar mem" style="width:18px"></div></div>
+                            <div class="tm-row"><span class="name">dwm.exe</span><span class="val">1.0%</span><div class="bar cpu" style="width:12px"></div><span class="val">51 MB</span><div class="bar mem" style="width:12px"></div></div>
+                            <div class="tm-row"><span class="name">SearchUI.exe</span><span class="val">0.9%</span><div class="bar cpu" style="width:10px"></div><span class="val">66 MB</span><div class="bar mem" style="width:15px"></div></div>
+                            <div class="tm-row"><span class="name">services.exe</span><span class="val">0.4%</span><div class="bar cpu" style="width:5px"></div><span class="val">8 MB</span><div class="bar mem" style="width:3px"></div></div>
+                            <div class="tm-row"><span class="name">System</span><span class="val">0.2%</span><div class="bar cpu" style="width:3px"></div><span class="val">4 MB</span><div class="bar mem" style="width:2px"></div></div>
+                        </div>
+                    </div>
+                    <div class="preview-taskbar">
+                        <div class="preview-start">&#8862;</div>
+                        <div class="preview-app-btn">TM Task Manager</div>
+                        <div class="preview-tray">
+                            <span class="tray-item">CPU 8%</span>
+                            <span class="tray-item">RAM 13%</span>
+                            <span class="tray-item" style="color: #ffcc00;">XP: 0</span>
+                            <span class="tray-item" style="color: rgba(255,255,255,0.8);">14:32</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Editions -->
+    <section class="editions" id="editions">
+        <div class="container">
+            <h2>Three Editions</h2>
+            <p class="subtitle">Same core. Different purposes. All open source.</p>
+            <div class="edition-grid">
+                <div class="edition-card">
+                    <div class="tag">Community</div>
+                    <h3>For Everyone</h3>
+                    <p>A sandbox to experiment with OS concepts without breaking anything real. Want to know what happens when you kill svchost.exe? Find out here.</p>
+                    <ul>
+                        <li>Full virtual OS simulation</li>
+                        <li>7 mission types</li>
+                        <li>XP and levelling system</li>
+                        <li>Safe to experiment</li>
+                    </ul>
+                </div>
+                <div class="edition-card">
+                    <div class="tag">Fun</div>
+                    <h3>For Gamers</h3>
+                    <p>Gamified chaos. Random malware, memory leaks, Windows Update hogging everything. Compete for high scores. Speed-run missions.</p>
+                    <ul>
+                        <li>Random events and chaos mode</li>
+                        <li>High score tracking</li>
+                        <li>Level-up unlocks (more RAM, cores)</li>
+                        <li>Achievement hunting</li>
+                    </ul>
+                </div>
+                <div class="edition-card">
+                    <div class="tag">Education</div>
+                    <h3>For Classrooms</h3>
+                    <p>Curriculum-aligned from Key Stage 2 upward. The generation above the AI layer still needs to understand what's underneath.</p>
+                    <ul>
+                        <li>KS2: What is a process? What is memory?</li>
+                        <li>KS3/GCSE: Scheduling, memory pressure</li>
+                        <li>Enterprise: Role-play complex scenarios</li>
+                        <li>Software map tickets on completion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Under the Hood</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon" style="background: rgba(0,120,212,0.1); color: var(--accent);">&#9881;</div>
+                    <h4>Virtual Kernel</h4>
+                    <p>18 real Windows processes simulated with CPU/RAM fluctuation, memory pressure, and page file mechanics.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="background: rgba(175,82,222,0.1); color: var(--purple);">&#9733;</div>
+                    <h4>Mission System</h4>
+                    <p>7 mission types with time limits, XP rewards, and time bonuses. Missions spawn dynamically every 30-90 seconds.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="background: rgba(48,209,88,0.1); color: var(--green);">&#9634;</div>
+                    <h4>Win10 Desktop</h4>
+                    <p>Taskbar, start menu, draggable windows, toast notifications. Looks and feels like the real thing.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="background: rgba(255,69,58,0.1); color: var(--red);">&#9888;</div>
+                    <h4>Random Events</h4>
+                    <p>Memory leaks, malware injections, Windows Update going rogue. Stay on your toes.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="background: rgba(255,159,10,0.1); color: var(--orange);">&#9650;</div>
+                    <h4>Progress System</h4>
+                    <p>XP, levels, high scores. Level up to unlock more CPU cores and RAM. Persistent save file.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="background: rgba(0,120,212,0.1); color: var(--accent);">&#8645;</div>
+                    <h4>Guided Tutorial</h4>
+                    <p>Animated spotlight overlay walks new players through every element of the UI on first launch.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to play?</h2>
+            <p>Clone the repo, run the launcher, manage your virtual OS.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/lozturner/winsim" class="btn btn-primary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    View on GitHub
+                </a>
+                <a href="https://github.com/lozturner/winsim#contributing" class="btn btn-secondary">Contribute</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>WinSim &mdash; Created by <a href="https://github.com/lozturner">Laurence Turner</a> &middot; MIT License &middot; 2026</p>
+        </div>
+    </footer>
+</body>
+</html>
