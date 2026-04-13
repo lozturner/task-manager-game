@@ -1,10 +1,10 @@
-# WinSim - OS Simulator Game
+# Task Manager — OS Simulator Game
 
 **A fake Windows desktop where you manage virtual processes, memory, and disk. Missions teach you how operating systems work — by playing.**
 
 Built with PyQt5. Looks like Windows 10. Runs like a game. Teaches like a classroom.
 
-[![GitHub Pages](https://img.shields.io/badge/Live_Site-WinSim-0078d4?style=for-the-badge&logo=github)](https://lozturner.github.io/winsim)
+[![GitHub Pages](https://img.shields.io/badge/Live_Site-Task_Manager-0078d4?style=for-the-badge&logo=github)](https://lozturner.github.io/winsim)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 
@@ -12,9 +12,7 @@ Built with PyQt5. Looks like Windows 10. Runs like a game. Teaches like a classr
 
 ## What Is This?
 
-WinSim is an OS simulator game. You get a virtual Windows desktop with a taskbar, start menu, and draggable windows. Under the hood, a virtual kernel runs ~18 processes that fluctuate CPU and RAM in real-time. Missions appear — kill a runaway process, free memory, find malware, optimise startup services — and you earn XP.
-
-**It's Task Manager: The Game.**
+Task Manager is an OS simulator game. You get a virtual Windows desktop with a taskbar, start menu, and draggable windows. Under the hood, a virtual kernel runs ~18 processes that fluctuate CPU and RAM in real-time. Missions appear — kill a runaway process, free memory, find malware, optimise startup services — and you earn XP.
 
 ---
 

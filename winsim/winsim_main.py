@@ -1,5 +1,5 @@
 """
-WinSim v1.0.0 — OS Simulator Game
+Task Manager v1.0.0 — OS Simulator Game
 A fake Windows desktop where you manage virtual processes, memory, and disk.
 Missions teach you how Windows works by playing.
 """
@@ -36,7 +36,7 @@ class WinSimWindow(QWidget):
     """Main game window — the fake Windows desktop."""
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("WinSim — OS Simulator")
+        self.setWindowTitle("Task Manager — OS Simulator")
         self.setMinimumSize(1024, 640)
         self.resize(1200, 750)
         self.setStyleSheet("background: #000;")
