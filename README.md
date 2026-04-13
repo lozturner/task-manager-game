@@ -14,6 +14,8 @@ Built with PyQt5. Looks like Windows 10. Runs like a game. Teaches like a classr
 
 Task Manager is an OS simulator game. You get a virtual Windows desktop with a taskbar, start menu, and draggable windows. Under the hood, a virtual kernel runs ~18 processes that fluctuate CPU and RAM in real-time. Missions appear — kill a runaway process, free memory, find malware, optimise startup services — and you earn XP.
 
+![Task Manager — OS Simulator Game](docs/assets/screenshot.png)
+
 ---
 
 ## Three Editions

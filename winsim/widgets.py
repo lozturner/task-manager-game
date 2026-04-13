@@ -131,7 +131,7 @@ class ToastNotification(QWidget):
 TUTORIAL_STEPS = [
     {
         "target": "desktop",
-        "title": "Welcome to WinSim!",
+        "title": "Welcome to Task Manager!",
         "text": "This is your virtual Windows desktop.\n"
                 "Double-click icons to launch apps.\n"
                 "Manage processes, memory, and disk to complete missions!",
