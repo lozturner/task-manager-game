@@ -8,11 +8,11 @@
     <meta property="og:title" content="Task Manager — OS Simulator Game">
     <meta property="og:description" content="Manage a virtual OS, complete missions, earn XP. For everyone, for fun, for education.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lozturner.github.io/winsim">
+    <meta property="og:url" content="https://lozturner.github.io/task-manager-game">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- GoatCounter analytics -->
-    <script data-goatcounter="https://winsim.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://task-manager-game.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -326,17 +326,44 @@
     <div class="bg-glow"></div>
     <div class="bg-glow-2"></div>
 
+    <!-- Collaboration Banner -->
+    <div id="collab-banner" style="
+        position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+        background: linear-gradient(90deg, #0078d4, #af52de);
+        color: white; text-align: center; font-family: Inter, sans-serif;
+        font-size: 14px; font-weight: 500; padding: 10px 48px;
+        box-shadow: 0 2px 12px rgba(0,120,212,0.4);
+        transform: translateY(-100%); animation: bannerSlide 0.6s 1.5s ease forwards;
+    ">
+        &#128640;&nbsp; This is an open project &mdash;
+        <a href="https://github.com/lozturner/task-manager-game" style="color:white; font-weight:700; text-decoration:underline;">
+            join us on GitHub
+        </a>
+        and help build it into something brilliant.
+        &nbsp;&#128640;
+        <button onclick="document.getElementById('collab-banner').style.display='none'" style="
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+            font-size: 14px; line-height: 1;
+        ">&times;</button>
+    </div>
+    <style>
+        @keyframes bannerSlide { to { transform: translateY(0); } }
+        body { padding-top: 42px; }
+    </style>
+
     <!-- Nav -->
-    <nav>
+    <nav style="top: 42px;">
         <div class="container">
             <a href="#" class="logo">
-                <div class="logo-icon">WS</div>
+                <div class="logo-icon">TM</div>
                 Task Manager
             </a>
             <div class="nav-links">
                 <a href="#editions">Editions</a>
                 <a href="#features">Features</a>
-                <a href="https://github.com/lozturner/winsim" class="nav-cta">GitHub</a>
+                <a href="https://github.com/lozturner/task-manager-game" class="nav-cta">GitHub</a>
             </div>
         </div>
     </nav>
@@ -348,11 +375,11 @@
             <h1>Task Manager.<br><span class="gradient">The Game.</span></h1>
             <p>A virtual Windows desktop where you manage processes, memory, and disk. Missions teach you how operating systems work &mdash; by playing.</p>
             <div class="hero-buttons">
-                <a href="https://github.com/lozturner/winsim" class="btn btn-primary">
+                <a href="https://github.com/lozturner/task-manager-game" class="btn btn-primary">
                     <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
                     View on GitHub
                 </a>
-                <a href="https://github.com/lozturner/winsim#quick-start" class="btn btn-secondary">Get Started</a>
+                <a href="https://github.com/lozturner/task-manager-game#quick-start" class="btn btn-secondary">Get Started</a>
             </div>
 
             <!-- Fake desktop preview -->
@@ -487,11 +514,11 @@
             <h2>Ready to play?</h2>
             <p>Clone the repo, run the launcher, manage your virtual OS.</p>
             <div class="hero-buttons">
-                <a href="https://github.com/lozturner/winsim" class="btn btn-primary">
+                <a href="https://github.com/lozturner/task-manager-game" class="btn btn-primary">
                     <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
                     View on GitHub
                 </a>
-                <a href="https://github.com/lozturner/winsim#contributing" class="btn btn-secondary">Contribute</a>
+                <a href="https://github.com/lozturner/task-manager-game#contributing" class="btn btn-secondary">Contribute</a>
             </div>
         </div>
     </section>

@@ -4,7 +4,7 @@
 
 Built with PyQt5. Looks like Windows 10. Runs like a game. Teaches like a classroom.
 
-[![GitHub Pages](https://img.shields.io/badge/Live_Site-Task_Manager-0078d4?style=for-the-badge&logo=github)](https://lozturner.github.io/winsim)
+[![GitHub Pages](https://img.shields.io/badge/Live_Site-Task_Manager-0078d4?style=for-the-badge&logo=github)](https://lozturner.github.io/task-manager-game)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 
@@ -53,14 +53,14 @@ The game presents a full Windows 10-style desktop:
 
 ### From Source
 ```bash
-git clone https://github.com/lozturner/winsim.git
-cd winsim
+git clone https://github.com/lozturner/task-manager-game.git
+cd task-manager-game
 pip install -r requirements.txt
-python Laurence_WinSim_launcher.py
+python Laurence_TaskManager_launcher.py
 ```
 
 ### From EXE (Windows)
-Download `Laurence_WinSim_v1.0.0.exe` from [Releases](https://github.com/lozturner/winsim/releases) and double-click.
+Download `Laurence_TaskManager_v1.0.0.exe` from [Releases](https://github.com/lozturner/task-manager-game/releases) and double-click.
 
 ---
 
